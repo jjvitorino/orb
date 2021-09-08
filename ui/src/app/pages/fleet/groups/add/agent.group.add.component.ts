@@ -9,6 +9,8 @@ import { Agent } from 'app/common/interfaces/orb/agent.interface';
 import { DropdownFilterItem } from 'app/common/interfaces/mainflux.interface';
 import { AgentsService } from 'app/common/services/agents/agents.service';
 import { ColumnMode, TableColumn } from '@swimlane/ngx-datatable';
+import { NbDialogService } from '@nebular/theme';
+import { AgentMatchComponent } from 'app/pages/fleet/agents/match/agent.match.component';
 
 
 @Component({
@@ -64,6 +66,7 @@ export class AgentGroupAddComponent implements OnInit, AfterViewInit {
   constructor(
     private agentGroupsService: AgentGroupsService,
     private agentsService: AgentsService,
+    private dialogService: NbDialogService,
     private router: Router,
     private route: ActivatedRoute,
     private _formBuilder: FormBuilder,
@@ -98,7 +101,6 @@ export class AgentGroupAddComponent implements OnInit, AfterViewInit {
     });
 
     this.tagMatch.total = this.tagMatch.online = 0;
-    this.expanded = false;
 
     this.agentGroupsService.clean();
   }
@@ -216,10 +218,17 @@ export class AgentGroupAddComponent implements OnInit, AfterViewInit {
     );
   }
 
-  toggleExpandMatches() {
-    this.expanded = !this.expanded;
-    !!this.expanded && this.updateMatchingAgents();
+  openMatchesModal() {
+    this.dialogService.open(AgentMatchComponent, {
+      context: {
+        matchingAgents: this.matchingAgents,
+        tagMatch: this.tagMatch,
+      },
+      autoFocus: true,
+      closeOnEsc: true,
+    });
   }
+
 
   wrapPayload(validate: boolean) {
     const {name, description} = this.firstFormGroup.controls;
